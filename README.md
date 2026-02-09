@@ -86,6 +86,3 @@ The app runs locally; only you can access it.
 - NumPy
 - scikit-learn (for confusion matrix and classification report in the notebook)
 - seaborn (for plotting in the notebook)
-
-
-# Image-Classification-Model
