@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Dataset (large; add your own or download separately)
+Tomato_Images/

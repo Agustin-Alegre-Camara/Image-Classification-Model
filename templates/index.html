@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tomato Leaf Disease Recognition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1419;
+            --surface: #1a2332;
+            --surface-hover: #243044;
+            --border: rgba(255,255,255,0.08);
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #3fb950;
+            --accent-hover: #56d364;
+            --danger: #f85149;
+            --radius: 12px;
+            --shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+        .cards-row {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+        }
+        .cards-row > form {
+            flex: 1.3;
+            display: flex;
+        }
+        .cards-row > form .card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0;
+        }
+        .cards-row .card {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .cards-row > form .upload-area {
+            flex: 1;
+            min-height: 320px;
+        }
+        @media (max-width: 640px) {
+            .cards-row { flex-direction: column; }
+            .cards-row .card { margin-bottom: 20px; }
+        }
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.02);
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(63,185,80,0.06);
+        }
+        .upload-area .icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: var(--surface-hover);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .upload-area #filename {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .upload-area.has-file #filename { color: var(--accent); }
+        input[type="file"] { display: none; }
+        img.preview {
+            max-width: 100%;
+            max-height: 280px;
+            margin-top: 20px;
+            border-radius: var(--radius);
+            object-fit: contain;
+        }
+        .btn {
+            width: 100%;
+            background: var(--accent);
+            color: #0f1419;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 20px;
+        }
+        .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled {
+            background: var(--surface-hover);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            display: none;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        .result.show {
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-preview {
+            max-width: 100%;
+            max-height: 220px;
+            border-radius: var(--radius);
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+        .result .prediction {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .result .confidence {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .result .confidence-bar {
+            width: 120px;
+            height: 6px;
+            background: var(--surface-hover);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .result .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #26a641);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .classes {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            padding: 0 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🍅 Tomato Leaf Disease Recognition</h1>
+            <p>Upload a tomato leaf image for an AI-powered diagnosis</p>
+        </header>
+        <div class="cards-row">
+            <form id="form" method="post" enctype="multipart/form-data" action="/predict" style="flex: 1;">
+                <div class="card">
+                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('file').click()">
+                        <input type="file" id="file" name="image" accept="image/*" required>
+                        <div class="icon">📷</div>
+                        <p id="filename">Click or drop an image here</p>
+                        <img id="preview" class="preview" style="display:none" alt="Preview">
+                    </div>
+                    <button type="submit" class="btn" id="btn">Analyze leaf</button>
+                </div>
+            </form>
+            <div class="card result {{ result_class }}" id="result">
+            {% if image_data %}
+            <img class="result-preview" src="data:image/{{ image_type }};base64,{{ image_data }}" alt="Analyzed leaf">
+            {% endif %}
+            <p class="prediction" id="prediction">{{ prediction }}</p>
+            <div class="confidence">
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidenceBar" style="width: {{ confidence_pct }}%"></div>
+                </div>
+                <span id="confidence">{{ confidence }}</span>
+            </div>
+        </div>
+        </div>
+        <p class="classes"><strong>Supported conditions:</strong><br>{{ classes }}</p>
+    </div>
+    <script>
+        var area = document.getElementById('uploadArea');
+        var fileInput = document.getElementById('file');
+        fileInput.onchange = function() {
+            var f = this.files[0];
+            document.getElementById('filename').textContent = f ? f.name : 'Click or drop an image here';
+            area.classList.toggle('has-file', !!f);
+            var img = document.getElementById('preview');
+            if (f) {
+                img.src = URL.createObjectURL(f);
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+        };
+        ['dragenter','dragover','dragleave','drop'].forEach(function(e) {
+            area.addEventListener(e, function(ev) { ev.preventDefault(); ev.stopPropagation(); });
+        });
+        ['dragenter','dragover'].forEach(function(e) {
+            area.addEventListener(e, function() { area.classList.add('dragover'); });
+        });
+        ['dragleave','drop'].forEach(function(e) {
+            area.addEventListener(e, function() { area.classList.remove('dragover'); });
+        });
+        area.addEventListener('drop', function(e) {
+            var f = e.dataTransfer.files[0];
+            if (f && f.type.startsWith('image/')) {
+                fileInput.files = e.dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+        document.getElementById('form').onsubmit = function() {
+            document.getElementById('btn').disabled = true;
+            document.getElementById('btn').textContent = 'Analyzing...';
+        };
+    </script>
+</body>
+</html>
