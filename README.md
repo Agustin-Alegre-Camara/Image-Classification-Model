@@ -88,3 +88,4 @@ The app runs locally; only you can access it.
 - seaborn (for plotting in the notebook)
 
 
+# Image-Classification-Model
