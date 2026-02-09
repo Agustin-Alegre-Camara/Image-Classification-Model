@@ -1,4 +1,4 @@
-# Tomato Leaf Disease Recognition
+# Image Classification Model
 
 AI-powered web app to identify tomato leaf diseases from images. Upload a photo of a tomato leaf and get an instant prediction with confidence score.
 
